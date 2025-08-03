@@ -1,42 +1,71 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Départements de France par altitude</title>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <meta charset="UTF-8">
+  <title>Numerical Table Sort</title>
+  <style>
+    table {
+      width: 50%;
+      border-collapse: collapse;
+      margin: 20px auto;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      cursor: pointer;
+      background-color: #f2f2f2;
+    }
+
+    th:hover {
+      background-color: #e0e0e0;
+    }
+  </style>
 </head>
 <body>
-  <h1>Altitudes minimale et maximale des départements français</h1>
-  <table id="altitudes" class="display">
+
+  <table id="myTable">
     <thead>
       <tr>
-        <th>Code</th><th>Département</th><th>Alt_min (m)</th><th>Commune_min</th><th>Alt_max (m)</th><th>Commune_max</th><th>Coordonnées max</th>
+        <th onclick="sortTableNumerically(0)">Name</th>
+        <th onclick="sortTableNumerically(1)">Score</th>
       </tr>
     </thead>
     <tbody>
-      <!-- Rows will be loaded by JS -->
+      <tr><td>Alice</td><td>100</td></tr>
+      <tr><td>Bob</td><td>20</td></tr>
+      <tr><td>Charlie</td><td>300</td></tr>
+      <tr><td>Diana</td><td>5</td></tr>
     </tbody>
   </table>
 
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script>
-    $(document).ready(function(){
-      fetch("altitudes_departements.csv")
-        .then(res => res.text())
-        .then(text => {
-          const lines = text.trim().split("\n").slice(1);
-          lines.forEach(line => {
-            const cells = line.split(",").map(cell => `<td>${cell}</td>`).join("");
-            $("#altitudes tbody").append(`<tr>${cells}</tr>`);
-          });
-          $('#altitudes').DataTable({
-            paging: false,
-            info: false,
-            order: [[0,'asc']]
-          });
-        });
-    });
+    let sortOrder = 1; // 1 for ascending, -1 for descending
+
+    function sortTableNumerically(columnIndex) {
+      const table = document.getElementById("myTable");
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+
+      rows.sort((a, b) => {
+        const valA = parseFloat(a.cells[columnIndex].innerText) || 0;
+        const valB = parseFloat(b.cells[columnIndex].innerText) || 0;
+        return (valA - valB) * sortOrder;
+      });
+
+      // Toggle sort order for next click
+      sortOrder *= -1;
+
+      // Reattach sorted rows
+      for (const row of rows) {
+        tbody.appendChild(row);
+      }
+    }
   </script>
+
 </body>
 </html>
