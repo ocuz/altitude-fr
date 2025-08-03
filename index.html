@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Départements de France par altitude</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+</head>
+<body>
+  <h1>Altitudes minimale et maximale des départements français</h1>
+  <table id="altitudes" class="display">
+    <thead>
+      <tr>
+        <th>Code</th><th>Département</th><th>Alt_min (m)</th><th>Commune_min</th><th>Alt_max (m)</th><th>Commune_max</th><th>Coordonnées max</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be loaded by JS -->
+    </tbody>
+  </table>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      fetch("altitudes_departements.csv")
+        .then(res => res.text())
+        .then(text => {
+          const lines = text.trim().split("\n").slice(1);
+          lines.forEach(line => {
+            const cells = line.split(",").map(cell => `<td>${cell}</td>`).join("");
+            $("#altitudes tbody").append(`<tr>${cells}</tr>`);
+          });
+          $('#altitudes').DataTable({
+            paging: false,
+            info: false,
+            order: [[0,'asc']]
+          });
+        });
+    });
+  </script>
+</body>
+</html>
